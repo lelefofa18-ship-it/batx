@@ -12,6 +12,7 @@ class XBat : ParsedHttpSource() {
     override val lang = "all"
     override val supportsLatest = true
 
+    // ===== POPULAR =====
     override fun popularMangaSelector() = "a[href^=/title/]"
 
     override fun popularMangaFromElement(element: Element): SManga =
@@ -20,16 +21,18 @@ class XBat : ParsedHttpSource() {
             url = element.attr("href")
         }
 
-    override fun popularMangaNextPageSelector() = null
+    override fun popularMangaNextPageSelector(): String? = null
 
+    // ===== DETALHES =====
     override fun mangaDetailsParse(document: Document): SManga =
         SManga.create().apply {
             description =
                 document.select("meta[name=description]").attr("content")
             thumbnail_url =
-                document.select("img").firstOrNull()?.attr("abs:src")
+                document.select("meta[property=og:image]").attr("content")
         }
 
+    // ===== CAPÍTULOS =====
     override fun chapterListSelector() = "a[href*=-ch_]"
 
     override fun chapterFromElement(element: Element): SChapter =
@@ -38,16 +41,14 @@ class XBat : ParsedHttpSource() {
             url = element.attr("href")
         }
 
-    override fun pageListParse(document: Document): List<Page> {
-    return document.select("img.w-full.h-full").mapIndexed { index, img ->
-        Page(
-            index,
-            "",
-            img.attr("abs:src")
-        )
-    }
-}
-
+    // ===== PÁGINAS =====
+    override fun pageListParse(document: Document): List<Page> =
+        document.select("img.w-full.h-full").mapIndexed { index, img ->
+            Page(
+                index,
+                "",
+                img.attr("abs:src")
+            )
         }
 
     override fun imageUrlParse(document: Document) = ""
