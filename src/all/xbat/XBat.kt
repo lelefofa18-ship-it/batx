@@ -38,9 +38,16 @@ class XBat : ParsedHttpSource() {
             url = element.attr("href")
         }
 
-    override fun pageListParse(document: Document): List<Page> =
-        document.select("img").mapIndexed { i, img ->
-            Page(i, "", img.attr("abs:src"))
+    override fun pageListParse(document: Document): List<Page> {
+    return document.select("img.w-full.h-full").mapIndexed { index, img ->
+        Page(
+            index,
+            "",
+            img.attr("abs:src")
+        )
+    }
+}
+
         }
 
     override fun imageUrlParse(document: Document) = ""
